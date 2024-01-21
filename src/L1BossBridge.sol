@@ -43,6 +43,7 @@ contract L1BossBridge is Ownable, Pausable, ReentrancyGuard {
         token = _token;
         vault = new L1Vault(token);
         // Allows the bridge to move tokens out of the vault to facilitate withdrawals
+        //@audit-info: given max approval 
         vault.approveTo(address(this), type(uint256).max);
     }
 
@@ -63,7 +64,7 @@ contract L1BossBridge is Ownable, Pausable, ReentrancyGuard {
      * the unlock event will trigger the L2 minting process. There are nodes listening
      * for this event and will mint the corresponding tokens on L2. This is a centralized process.
      * 
-     * @param from The address of the user who is depositing tokens
+     * @param from:  The address of the user who is depositing tokens
      * @param l2Recipient The address of the user who will receive the tokens on L2
      * @param amount The amount of tokens to deposit
      */
@@ -90,9 +91,7 @@ contract L1BossBridge is Ownable, Pausable, ReentrancyGuard {
      */
     function withdrawTokensToL1(address to, uint256 amount, uint8 v, bytes32 r, bytes32 s) external {
         sendToL1(
-            v,
-            r,
-            s,
+            v,r,s,
             abi.encode(
                 address(token),
                 0, // value
